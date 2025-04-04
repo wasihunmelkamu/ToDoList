@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Sales Website</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .link-section a {
+      display: block;
+      margin: 10px 0;
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .date-list {
+      display: none;
+      margin-top: 20px;
+    }
+    .date-list button {
+      padding: 10px 15px;
+      margin: 5px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .date-list button:hover {
+      background-color: #0056b3;
+    }
+    .form-section {
+      margin-top: 20px;
+      display: none;
+    }
+    .data-display {
+      margin-top: 20px;
+      display: none;
+    }
+    .data-display table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .data-display th, .data-display td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>Car Sales Management</h1>
+
+  <!-- Section for clickable links -->
+  <div class="link-section">
+    <h2>Explore:</h2>
+    <a id="inventoryLink">Car Inventory</a>
+    <a id="ordersLink">Customer Orders</a>
+    <a id="salesLink">Sales Report</a>
+  </div>
+
+  <!-- Section for dates -->
+  <div class="date-list" id="dateList">
+    <h2>Select a Date</h2>
+    <!-- Dates will be dynamically inserted as buttons -->
+  </div>
+
+  <!-- Section for Sale/Completed options -->
+  <div class="form-section" id="formSection">
+    <h2>Options for <span id="selectedDate"></span></h2>
+    <button id="saleButton">Sale Data</button>
+    <button id="completedButton">Completed Data</button>
+  </div>
+
+  <!-- Section for displaying data -->
+  <div class="data-display" id="dataDisplay">
+    <h3>Data for <span id="dataType"></span> on <span id="displayDate"></span></h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Car</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody id="dataTableBody"></tbody>
+    </table>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
