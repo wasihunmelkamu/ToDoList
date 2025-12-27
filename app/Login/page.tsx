@@ -17,7 +17,7 @@ import { signIn } from "@/auth";
 import { redirect } from "next/navigation";
 import { useFormState } from "react-dom";
 import { CredentialsSignIn, googlSignIn } from "../action/auth-action";
-
+import Link from "next/link";
 export default function LoginPage() {
   // optional : handle  form errors
   const [state, formAction] = useFormState(CredentialsSignIn, null);
@@ -42,12 +42,14 @@ export default function LoginPage() {
             </CardTitle>
             <CardDescription className="text-muted-foreground text-sm">
               Don&apos;t have an account?{" "}
-              <Button
-                variant="link"
-                className="p-0 h-auto font-medium text-indigo-400 hover:text-indigo-300"
-              >
-                Sign up
-              </Button>
+              <Link  href="/signUp" >
+                <Button
+                  variant="link"
+                  className="p-0 h-auto font-medium text-indigo-400 hover:text-indigo-300"
+                >
+                  Sign up
+                </Button>
+              </Link>
             </CardDescription>
           </CardHeader>
 
