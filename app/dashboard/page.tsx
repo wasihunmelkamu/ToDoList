@@ -3,8 +3,7 @@ import {
   useQueryClient,
   useMutation,
 } from "@tanstack/react-query";
-import { promises } from "dns";
-import { use, useRef } from "react";
+import { useRef } from "react";
 
 interface Task {
   id: string;
@@ -48,5 +47,50 @@ export default function TaskListInfinite() {
   const queryClient = useQueryClient();
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
-
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+    useInfiniteQuery({
+      queryKey: ["tasks"],
+      queryFn: ({ pageParam }) => fetchTasksPage(pageParam as number),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage: TasksPage) => {
+        return lastPage.hasMore ? lastPage.nextPage : undefined;
+      },
+    });
+  // OPTIMISTIC UPDATE LOGIC (SAME AS BEFOR)
+  const creteTaskMutation = useMutation({
+    mutationFn: (title: string) => createTask(title),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+  const updateTaskMutaion = useMutation({
+    mutationFn: ({ id, completed }: { id: string; completed: boolean }) =>
+      updateTask(id, completed),
+    onMutate: async (newTask) => {
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+      const previousData = queryClient.getQueryData<any>(["tasks"]);
+      queryClient.setQueryData<any>(["tasks"], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page: TasksPage, pageIndex: number) => {
+            const tasksIndex = page.tasks.findIndex((t) => t.id === newTask.id);
+            if (tasksIndex !== -1) {
+              const updateTasks = [...page.tasks];
+              updateTasks[tasksIndex] = {
+                ...updateTasks[tasksIndex],
+                completed: newTask.completed,
+              };
+              return { ...page, tasks: updateTasks };
+            }
+            return page;
+          }),
+        };
+      });
+      return { previousData };
+    },
+    onError: (err, newTask, context) => {
+      queryClient.setQueryData(["tasks"], context?.previousData);
+    },
+  });
 }
