@@ -3,7 +3,7 @@ import {
   useQueryClient,
   useMutation,
 } from "@tanstack/react-query";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface Task {
   id: string;
@@ -93,4 +93,28 @@ export default function TaskListInfinite() {
       queryClient.setQueryData(["tasks"], context?.previousData);
     },
   });
+
+  //INIFINTE SCROLL TRIGGER
+
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasNextPage) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1.0 }
+    );
+    observer.observe(loadMoreRef.current);
+    observerRef.current = observer;
+    return () => {
+      if (observerRef.current) observerRef.current.disconnect();
+    };
+  }, [hasNextPage, isFetchingNextPage]);
+  if (status === "pending") return <div>Loading...</div>;
+  if (status === "error") return <div>Error Loading</div>;
+  const allTasks = data.pages.flatMap((page) => page.tasks);
+
+  return
 }
