@@ -1,4 +1,3 @@
-import { json } from "zod";
 import { auth } from "@/auth";
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/prisma";
