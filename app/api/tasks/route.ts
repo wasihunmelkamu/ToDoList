@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { NextResponse } from "next/server";
-import { json, NEVER } from "zod";
 
 export async function GET(request: Request) {
   const seession = await auth();
