@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { prisma } from "@/prisma";
+
 import { redirect } from "next/navigation";
 import TaskListInfinite from "./TaskListInfinite";
 const Dashboard = async () => {

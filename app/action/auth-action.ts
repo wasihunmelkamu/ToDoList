@@ -3,7 +3,6 @@ import { signIn } from "@/auth";
 
 import { AuthError } from "next-auth"; //handle were  is  the error happen
 export async function CredentialsSignIn(prevState: any, formData: FormData) {
-   
   try {
     await signIn("credentials", {
       email: formData.get("email") as string,
@@ -23,6 +22,5 @@ export async function CredentialsSignIn(prevState: any, formData: FormData) {
   }
 }
 export async function googlSignIn() {
- 
   await signIn("google", { redirectTo: "/dashboard" });
 }
