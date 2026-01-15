@@ -19,6 +19,8 @@ interface Task {
   completed: boolean;
   userId: string;
   createdAt: string;
+  dueAt?: string | null;
+  notifyMinutesBefore?: number | null;
 }
 interface TasksPage {
   tasks: Task[];
@@ -38,11 +40,14 @@ async function fetchTasksPage(pageParam = 1): Promise<TasksPage> {
   return res.json();
 }
 //CREATE TASK
-async function createTask(title: string) {
+async function createTask(
+  title: string,
+  opts?: { dueAt?: string | null; notifyMinutesBefore?: number | null }
+) {
   const res = await fetch("api/tasks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ title, ...(opts || {}) }),
   });
   if (!res.ok) throw new Error("Failed to create task");
   return res.json();
@@ -72,10 +77,18 @@ export default function TaskListInfinite() {
     });
   // OPTIMISTIC UPDATE LOGIC (SAME AS BEFOR)
   const creteTaskMutation = useMutation({
-    mutationFn: (title: string) => createTask(title),
+    mutationFn: (payload: {
+      title: string;
+      dueAt?: string | null;
+      notifyMinutesBefore?: number | null;
+    }) => createTask(payload.title, {
+      dueAt: payload.dueAt,
+      notifyMinutesBefore: payload.notifyMinutesBefore,
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
+    mutationKey:['createTask']
   });
   const updateTaskMutaion = useMutation({
     mutationFn: ({ id, completed }: { id: string; completed: boolean }) =>
@@ -147,11 +160,19 @@ export default function TaskListInfinite() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              const input = e.currentTarget.taskInput as HTMLInputElement;
-              const title = input.value.trim();
+              const titleInput = e.currentTarget.taskInput as HTMLInputElement;
+              const dueInput = e.currentTarget.dueAt as HTMLInputElement;
+              const notifyInput = e.currentTarget.notifyMinutesBefore as HTMLInputElement;
+              const title = titleInput.value.trim();
+              const dueAt = dueInput.value ? new Date(dueInput.value).toISOString() : null;
+              const notifyMinutesBefore = notifyInput.value
+                ? Math.max(0, parseInt(notifyInput.value))
+                : null;
               if (title) {
-                creteTaskMutation.mutate(title);
-                input.value = "";
+                creteTaskMutation.mutate({ title, dueAt, notifyMinutesBefore });
+                titleInput.value = "";
+                dueInput.value = "";
+                notifyInput.value = "";
               }
             }}
             className="mb-8 flex gap-2"
@@ -161,6 +182,19 @@ export default function TaskListInfinite() {
               type="text"
               placeholder="What needs to be done?"
               className="h-11"
+            />
+            <Input
+              name="dueAt"
+              type="datetime-local"
+              placeholder="Due date/time"
+              className="h-11"
+            />
+            <Input
+              name="notifyMinutesBefore"
+              type="number"
+              min={0}
+              placeholder="Notify min"
+              className="h-11 w-28"
             />
             <Button type="submit" size="icon" className="h-11 w-11 shrink-0">
               <Plus className="h-5 w-5" />
@@ -201,6 +235,11 @@ export default function TaskListInfinite() {
                 >
                   {task.title}
                 </label>
+                {task.dueAt && (
+                  <Badge variant="outline" className="ml-auto">
+                    Due {new Date(task.dueAt).toLocaleString()}
+                  </Badge>
+                )}
               </div>
             ))}
           </div>
