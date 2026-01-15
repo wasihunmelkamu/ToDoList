@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { NextResponse } from "next/server";
+import { string } from "zod";
 
 export async function GET(request: Request) {
   const seession = await auth();
@@ -12,16 +13,17 @@ export async function GET(request: Request) {
   const limit = parseInt(searchParams.get("limit") || "10");
   const skip = (page - 1) * limit;
   // Cleanup overdue tasks for this user (server time)
-  try {
-    await prisma.task.deleteMany({
-      where: {
-        userId: seession.user.id,
-        dueAt: { lte: new Date() },
-      },
-    });
-  } catch (e) {
-    // ignore cleanup errors to avoid blocking list
-  }
+  // try {
+  //   await prisma.task.deleteMany({
+  //     where: {
+  //       userId: seession.user.id,
+  //       dueAt: { lte: new Date()},
+  //     } ,
+  //   }) as any;
+  // } catch (e) {
+  
+  //   // ignore cleanup errors to avoid blocking list
+  // }
   const total = await prisma.task.count({
     where: { userId: seession.user?.id },
   });

@@ -20,12 +20,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
         password: { label: "Password", type: "password", placeholder: "*****" },
       },
-      authorize:  async (credentials) => {
-        if (!credentials?.email || !credentials?.password) return;
+      authorize:  async (credentials) => { 
+        if (!credentials?.email || !credentials?.password) return null;
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         });
-        if (!user || !user.password) return;
+        if (!user || !user.password) return null;
         if (!user.emailVerified) {
           throw new Error("Email not verified");
         }

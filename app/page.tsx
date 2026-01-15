@@ -26,7 +26,7 @@ export default function Home() {
 
         <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight mb-6">
           Welcome to{" "}
-          <span className={THEME_STYLES.brandGradientText}>Taskflow</span>
+          Taskflow
         </h1>
 
         <p className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed max-w-2xl mx-auto">
