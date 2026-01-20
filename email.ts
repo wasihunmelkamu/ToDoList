@@ -15,7 +15,7 @@ export async function sendVerficationEmail({
   const verifyLink = `${process.env?.NEXTAUTH_URL}/verify_email?token=${token}`;
   try {
     const result = await resend.emails.send({
-      from: "ToDoList  <no-reply@wasihun.wuaze.com>",
+      from: "ToDoList  <no-reply@resend.dev>",
       to: email,
       subject: "verify you email",
       html: `<h1> Verfiy your email </h2> <p>Click the link below to verify your email address:</p>
